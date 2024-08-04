@@ -87,7 +87,7 @@ export const validateToken = async () => {
     }
     return response;
   } catch (error) {
-    console.log("validateToken ~ error:", error);
+    // console.log("validateToken ~ error:", error);
     throw new Error(error as string | undefined);
   }
 };
@@ -96,7 +96,7 @@ export const validateToken = async () => {
 export const logout = async () => {
   try {
     const response = await axiosInstance.post("/api/auth/logout");
-    console.log("login ~ response:", response);
+    // console.log("logout ~ response:", response);
 
     if (response?.status !== 200) {
       Notification.error(response?.data?.message);
@@ -106,7 +106,7 @@ export const logout = async () => {
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log("login ~ error:", error);
+      console.log("logout ~ error:", error);
       Notification.error(error?.response?.data?.message || error?.message);
     }
     throw new Error(error as string | undefined);
@@ -138,7 +138,7 @@ export const addMyHotel = async (formData: FormData) => {
 export const fetchHotels = async () => {
   try {
     const response = await axiosInstance.get("/api/hotels");
-    console.log("fetchHotels ~ response:", response);
+    // console.log("fetchHotels ~ response:", response);
 
     if (response?.status !== 200) {
       Notification.error(response?.data?.message);
@@ -331,7 +331,7 @@ export const createBooking = async (formData: BookingFormData) => {
       Notification.error(response?.data?.message);
       throw new Error(response?.data);
     }
-    console.log("createBooking ~ response:", response);
+    // console.log("createBooking ~ response:", response);
     Notification.success(response?.data?.message);
 
     return response?.data?.data;

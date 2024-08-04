@@ -17,7 +17,7 @@ const Register = () => {
       console.log("Register ~ error:", error);
     },
   });
-  console.log("Register ~ data:", data?.data?.data);
+  // console.log("Register ~ data:", data?.data?.data);
 
   // FORMIK INITIAL VALUES DEFINITION
   const initialValues: RegisterFormValuesType = {
@@ -46,7 +46,7 @@ const Register = () => {
     values: RegisterFormValuesType,
     { resetForm }: FormikHelpers<RegisterFormValuesType>
   ) => {
-    console.log("Register ~ values:", values);
+    // console.log("Register ~ values:", values);
     mutate(values);
     Object.keys(data?.data?.data).length > 0 && resetForm();
   };

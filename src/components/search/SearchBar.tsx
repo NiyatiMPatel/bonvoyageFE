@@ -1,36 +1,18 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
-import { useAppSelector } from "../../redux/hooks";
-import { useAppDispatch } from "../../redux/hooks";
-import {
-  setDestination,
-  setCheckIn,
-  setCheckOut,
-  setAdultCount,
-  setChildCount,
-} from "../../redux/searchSlice";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdTravelExplore } from "react-icons/md";
-import { RootState } from "../../redux/store";
 import { SearchVariables } from "../../types/types";
+import { useSearchContext } from "../../context/SearchContext";
 
 const SearchBar = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const destination = useAppSelector(
-    (state: RootState) => state?.search.destination
-  );
-  const checkIn = useAppSelector((state: RootState) => state?.search.checkIn);
-  const checkOut = useAppSelector((state: RootState) => state?.search.checkOut);
-  const adultCount = useAppSelector(
-    (state: RootState) => state?.search.adultCount
-  );
-  const childCount = useAppSelector(
-    (state: RootState) => state?.search.childCount
-  );
+  const {destination, checkIn, checkOut, adultCount, childCount, saveSearchValues} = useSearchContext()
+
 
   const initialValues: SearchVariables = {
     destination: destination,
@@ -42,20 +24,12 @@ const SearchBar = () => {
 
   const submitHandler = (values: SearchVariables) => {
     // console.log("submitHandler ~ values:", values);
-    dispatch(setDestination(values.destination));
-    dispatch(setAdultCount(values.adultCount));
-    dispatch(setChildCount(values.childCount));
-    dispatch(setCheckIn(values.checkIn));
-    dispatch(setCheckOut(values.checkOut));
-
+    const {destination, checkIn, checkOut, adultCount, childCount} = values
+    saveSearchValues(destination, checkIn, checkOut, adultCount, childCount)
     location.pathname !== "/search" && navigate("/search");
   };
   const clearHandler = () => {
-    dispatch(setDestination(""));
-    dispatch(setAdultCount(1));
-    dispatch(setChildCount(0));
-    dispatch(setCheckOut(new Date()));
-    dispatch(setCheckIn(new Date()));
+    saveSearchValues("", new Date(), new Date(), 1, 0)
   };
 
   const minDate = new Date();

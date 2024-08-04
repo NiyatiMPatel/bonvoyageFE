@@ -1,43 +1,28 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as apiClient from "../../axios/api-client";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../redux/hooks";
-import {
-  setAdultCount,
-  setCheckIn,
-  setCheckOut,
-  setChildCount,
-  setDestination,
-  sethotelId,
-} from "../../redux/searchSlice";
-import { setLoggedIn } from "../../redux/userSlice";
+import { useSearchContext } from "../../context/SearchContext";
+
 
 const SignOutButton = () => {
+
+  const {saveSearchValues} = useSearchContext()
+
+
   // REACT QUERY ACCESS AT GLOBAL LEVEL
   const queryClient = useQueryClient();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { mutate, isPending } = useMutation({
     mutationFn: apiClient.logout,
     onSuccess: async () => {
       // Invalidate the "validateToken" query
       await queryClient.invalidateQueries({ queryKey: ["validateToken"] });
-      dispatch(setDestination(""));
-      dispatch(setCheckIn(new Date()));
-      dispatch(setCheckOut(new Date()));
-      dispatch(setAdultCount(1));
-      dispatch(setChildCount(0));
-      dispatch(sethotelId(""));
-      dispatch(setLoggedIn(false));
-      // // Clear persist:root in local storage
-      // await persistor.purge();
-      // // Clear all states in the Redux store
-      // await persistor.flush();
-
-      navigate("/");
+      saveSearchValues("", new Date(), new Date(), 1, 0)
+       navigate("/");
     },
     onError: (error: Error) => {
       console.log("Register ~ error:", error);
+      throw new Error("Something went wrong, try again.")
     },
   });
 

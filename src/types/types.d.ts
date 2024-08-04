@@ -77,6 +77,24 @@ type SearchVariables = {
   hotelId?: string;
 };
 
+type SearchContextValue = SearchVariables & {saveSearchValues:(
+  destination: string,
+  checkIn: Date,
+  checkOut: Date,
+  adultCount: number,
+  childCount: number,
+  hotelId?: string,
+ ) => void
+ }
+ 
+
+type SearchActionKind = "DESTINATION" | "CHECKIN" | "CHECKOUT" | "ADULTCOUNT" | "CHILDCOUNT" | "HOTELID"
+
+type SearchAction = {
+  type: SearchActionKind;
+  payload: string | Date | number;
+};
+
 //Define a type for search query parameters to send to backend - match variables with backend
 type SearchQueryParams = {
   destination?: string;

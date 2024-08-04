@@ -1,26 +1,29 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Formik, Field, Form, ErrorMessage, FormikHelpers } from "formik";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import * as apiClient from "../../axios/api-client";
-import { setLoggedIn } from "../../redux/userSlice";
-import { useAppDispatch } from "../../redux/hooks";
 import { SignInFromValueType } from "../../types/types";
 const SignIn = () => {
-  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  const queryClient = useQueryClient();
+
+
   const { data, mutate, isPending } = useMutation({
     mutationFn: apiClient.login,
     onSuccess: async () => {
-      dispatch(setLoggedIn(true));
+      await queryClient.fetchQuery({
+        queryKey: ["validateToken"],
+      })
       navigate(location.state?.from ?? "/");
     },
     onError: (error: Error) => {
       console.log("Register ~ error:", error);
+      throw new Error("Something went wrong, try again.")
     },
   });
 

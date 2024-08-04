@@ -1,19 +1,13 @@
-import { useAppSelector } from "../../redux/hooks";
-import { RootState } from "../../redux/store";
+
+import { useSearchContext } from "../../context/SearchContext";
 import { BookingDetailSummaryProps } from "../../types/types";
 
 const BookingDetailSummary = ({
   hotel,
   numberOfNights,
 }: BookingDetailSummaryProps) => {
-  const checkIn = useAppSelector((state: RootState) => state?.search.checkIn);
-  const checkOut = useAppSelector((state: RootState) => state?.search.checkOut);
-  const adultCount = useAppSelector(
-    (state: RootState) => state?.search.adultCount
-  );
-  const childCount = useAppSelector(
-    (state: RootState) => state?.search.childCount
-  );
+  const {checkIn, checkOut, adultCount, childCount} = useSearchContext()
+
   return (
     <div className="grid gap-4 rounded-lg border border-slate-300 p-5 h-fit">
       <h2 className="text-xl font-bold">Your Booking Details</h2>
@@ -24,11 +18,11 @@ const BookingDetailSummary = ({
       <div className="flex justify-between">
         <div>
           Check-in
-          <div className="font-bold"> {new Date(checkIn).toDateString()}</div>
+          <div className="font-bold"> {checkIn.toDateString()}</div>
         </div>
         <div>
           Check-out
-          <div className="font-bold"> {new Date(checkOut).toDateString()}</div>
+          <div className="font-bold"> {checkOut.toDateString()}</div>
         </div>
       </div>
       <div className="border-t border-b py-2">

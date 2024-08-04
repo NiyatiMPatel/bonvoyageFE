@@ -1,44 +1,33 @@
 import { Field, Form, Formik } from "formik";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { RootState } from "../../redux/store";
 import { BookingFormData, BookingFormProps } from "../../types/types";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { StripeCardElement } from "@stripe/stripe-js";
 import { useMutation } from "@tanstack/react-query";
 import * as apiClient from "../../axios/api-client";
-import {
-  setAdultCount,
-  setCheckIn,
-  setCheckOut,
-  setChildCount,
-  setDestination,
-} from "../../redux/searchSlice";
+import { useSearchContext } from "../../context/SearchContext";
+
 
 const BookingForm = ({ currentUser, paymentIntentData }: BookingFormProps) => {
+  // console.log("BookingForm ~ paymentIntentData:", paymentIntentData);
   const stripe = useStripe();
   const elements = useElements();
 
   const { hotelId } = useParams();
 
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate()
 
-  const checkIn = useAppSelector((state: RootState) => state?.search.checkIn);
-  const checkOut = useAppSelector((state: RootState) => state?.search.checkOut);
-  const adultCount = useAppSelector(
-    (state: RootState) => state?.search.adultCount
-  );
-  const childCount = useAppSelector(
-    (state: RootState) => state?.search.childCount
-  );
+
+  const {checkIn, checkOut, adultCount, childCount, saveSearchValues} = useSearchContext()
+
   const initialValues: BookingFormData = {
     firstName: currentUser?.firstName,
     lastName: currentUser?.lastName,
     email: currentUser?.email,
-    adultCount: adultCount,
-    childCount: childCount,
-    checkIn: new Date(checkIn).toISOString(),
-    checkOut: new Date(checkOut).toISOString(),
+    adultCount,
+    childCount,
+    checkIn: checkIn.toISOString(),
+    checkOut: checkOut.toISOString(),
     hotelId: hotelId ?? "",
     totalCost: paymentIntentData.totalCost,
     paymentIntentId: paymentIntentData.paymentIntentId,
@@ -47,11 +36,8 @@ const BookingForm = ({ currentUser, paymentIntentData }: BookingFormProps) => {
   const { mutate: bookyRoom, isPending } = useMutation({
     mutationFn: apiClient.createBooking,
     onSuccess: () => {
-      dispatch(setDestination(""));
-      dispatch(setCheckIn(new Date()));
-      dispatch(setCheckOut(new Date()));
-      dispatch(setAdultCount(1));
-      dispatch(setChildCount(0));
+      saveSearchValues("", new Date(), new Date(), 1, 0)
+      navigate("/");
     },
     onError: (error: Error) => {
       console.log("BookingForm ~ error:", error);

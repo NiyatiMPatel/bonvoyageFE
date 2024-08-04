@@ -50,7 +50,7 @@ const ImagesSection = () => {
           multiple
           accept="image/*"
           onChange={(event: any) => {
-            console.log("ImagesSection ~ event", event);
+            // console.log("ImagesSection ~ event", event);
             const files = event.target.files;
             setFieldValue("imageFiles", files);
           }}

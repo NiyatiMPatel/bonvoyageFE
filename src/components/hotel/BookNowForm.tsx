@@ -3,39 +3,24 @@ import * as Yup from "yup";
 
 import DatePicker from "react-datepicker";
 
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  setAdultCount,
-  setCheckIn,
-  setCheckOut,
-  setChildCount,
-} from "../../redux/searchSlice";
 import { useLocation, useNavigate } from "react-router-dom";
-import { RootState } from "../../redux/store";
 import { BookNowProps, GuestBookNowFormData } from "../../types/types";
+import { useUserContext } from "../../context/UserContext";
+import { useSearchContext } from "../../context/SearchContext";
 
 const BookNowForm = ({ hotelId, pricePerNight }: BookNowProps) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const isLoggedIn = useAppSelector(
-    (state: RootState) => state?.user.isLoggedIn
-  );
-  const checkIn = useAppSelector((state: RootState) => state?.search.checkIn);
-  const checkOut = useAppSelector((state: RootState) => state?.search.checkOut);
-  const adultCount = useAppSelector(
-    (state: RootState) => state?.search.adultCount
-  );
-  const childCount = useAppSelector(
-    (state: RootState) => state?.search.childCount
-  );
+  const {isLoggedIn} = useUserContext()
+
+  const {destination, checkIn, checkOut, adultCount, childCount, saveSearchValues} = useSearchContext()
 
   const initialValues: GuestBookNowFormData = {
-    checkIn: checkIn,
-    checkOut: checkOut,
-    adultCount: adultCount,
-    childCount: childCount,
+    checkIn,
+    checkOut,
+    adultCount,
+    childCount,
   };
 
   const validationSchema = Yup.object({
@@ -44,22 +29,31 @@ const BookNowForm = ({ hotelId, pricePerNight }: BookNowProps) => {
       .required("Number of adults is required"),
   });
 
-  const signInToBookSubmit = (values: GuestBookNowFormData) => {
-    // console.log("signInToBookSubmit ~ values:", values);
-    dispatch(setAdultCount(values.adultCount));
-    dispatch(setChildCount(values.childCount));
-    dispatch(setCheckOut(values.checkOut));
-    dispatch(setCheckIn(values.checkIn));
-    navigate("/sign-in", { state: { from: pathname } });
-  };
-  const bookNowSubmit = (values: GuestBookNowFormData) => {
-    // console.log("bookNowSubmit ~ values:", values);
-    dispatch(setAdultCount(values.adultCount));
-    dispatch(setChildCount(values.childCount));
-    dispatch(setCheckOut(values.checkOut));
-    dispatch(setCheckIn(values.checkIn));
-    navigate(`/hotel/${hotelId}/booking`); //BOOKING PAGE
-  };
+   // Helper function to handle booking logic
+const handleBooking = (
+  values: GuestBookNowFormData,
+  path: string,
+  navigateState?: Record<string, unknown>
+) => {
+  // console.log("Booking values:", values);
+  const { checkIn, checkOut, adultCount, childCount } = values;
+
+  // Save the search values using the context function
+  saveSearchValues(destination, checkIn, checkOut, adultCount, childCount);
+
+  // Navigate to the specified path with optional state
+  navigate(path, { state: navigateState });
+};
+
+// Function to handle the sign-in process before booking
+const signInToBookSubmit = (values: GuestBookNowFormData) => {
+  handleBooking(values, "/sign-in", { from: pathname });
+};
+
+// Function to handle direct booking
+const bookNowSubmit = (values: GuestBookNowFormData) => {
+  handleBooking(values, `/hotel/${hotelId}/booking`);
+};
 
   const minDate = new Date();
   const maxDate = new Date();

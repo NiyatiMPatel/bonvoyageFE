@@ -1,12 +1,9 @@
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../../redux/hooks";
 import SignOutButton from "../signout/SignOutButton";
-import { RootState } from "../../redux/store";
+import { useUserContext } from "../../context/UserContext";
 
 const Header = () => {
-  const isLoggedIn = useAppSelector(
-    (state: RootState) => state?.user.isLoggedIn
-  );
+  const {isLoggedIn} = useUserContext();
 
   return (
     <div className="bg-blue-800 py-6">

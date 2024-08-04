@@ -1,26 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as apiClient from "../axios/api-client";
 import BookingDetailSummary from "../components/booking/BookingDetailSummary";
 import BookingForm from "../components/booking/BookingForm";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../redux/hooks";
-import { RootState } from "../redux/store";
 import { Elements } from "@stripe/react-stripe-js";
 import stripePromise from "../stripe/StripeConfig";
+import { useSearchContext } from "../context/SearchContext";
 
 const BookingPage = () => {
   const [numberOfNights, setNumberOfNights] = useState<number>(0);
   const { hotelId } = useParams();
   // console.log("Booking ~ hotelId:", hotelId);
 
-  const checkin = useAppSelector((state: RootState) => state?.search.checkIn);
-  const checkout = useAppSelector((state: RootState) => state?.search.checkOut);
+  const queryClient = useQueryClient();
 
-  const checkIn = new Date(checkin);
-  const checkOut = new Date(checkout);
+
+  const {checkIn, checkOut} = useSearchContext()
 
   useEffect(() => {
+    console.log("effect triggered")
     if (checkIn && checkOut) {
       const nights =
         // check out time in ms minus check in time in ms / (1000 * 60 * 60 * 24) => No. of Days
@@ -29,6 +28,11 @@ const BookingPage = () => {
 
       setNumberOfNights(Math.ceil(nights));
     }
+
+    return ()=>{
+      queryClient.invalidateQueries({ queryKey: ["createPaymentIntent"], exact: true, refetchType: 'none' })
+    }
+
   }, [checkIn, checkOut]);
 
   const { data: hotel } = useQuery({

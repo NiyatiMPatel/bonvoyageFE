@@ -107,7 +107,7 @@ const ManageHotelForm = ({
     }
 
     Array.from(formDataJson.imageFiles).forEach((imageFile) => {
-      console.log("formDataJson.imageFiles.forEach ~ imageFile:", imageFile);
+      // console.log("formDataJson.imageFiles.forEach ~ imageFile:", imageFile);
       formData.append(`imageFiles`, imageFile);
     });
 

@@ -7,7 +7,7 @@ const MyBookingsPage = () => {
     queryKey: ["fetchMyBookings"],
     queryFn: () => apiClient.getBookings(),
   });
-  console.log("MyBookings ~ hotels:", hotels);
+  // console.log("MyBookings ~ hotels:", hotels);
 
   if (!hotels || hotels.length === 0) {
     return <span>No Bookings Found</span>;

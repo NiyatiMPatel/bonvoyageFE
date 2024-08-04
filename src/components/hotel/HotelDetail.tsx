@@ -3,7 +3,7 @@ import BookNowForm from "../../components/hotel/BookNowForm";
 import { HotelDetailsProps } from "../../types/types";
 
 const HotelDetail = ({ data }: HotelDetailsProps) => {
-  console.log("HotelDetail ~ data:", data);
+  // console.log("HotelDetail ~ data:", data);
   return (
     <div className="space-y-6">
       <div>
